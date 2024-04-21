@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">basic_ui_demo</string>
+
+    <string name="menu">Menu</string>
+
+    <string name="home">Home</string>
+
+    <string name="news">News</string>
+    <string name="match">Matches</string>
+    <string name="team">Team</string>
+    <string name="data">Data</string>
+
+</resources>
