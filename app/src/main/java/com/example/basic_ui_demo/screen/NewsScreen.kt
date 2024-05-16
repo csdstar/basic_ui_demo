@@ -1,4 +1,4 @@
-package com.example.basic_ui_demo
+package com.example.basic_ui_demo.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -10,14 +10,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.example.basic_ui_demo.NormalTextComponent
 
 @Composable
-fun TestScreen(navController: NavController){
+fun NewsScreen(navController: NavController){
     Column (
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Green)
     ){
-        NormalTextComponent(value = "TestScreen")
+        NormalTextComponent(value = "NewsScreen")
+        Button(
+            onClick = {
+                navController.navigate(Screen.TestScreen.route)
+            }
+        ) {
+            Log.d("MyTag",navController.currentDestination?.route.toString())
+            Text(text = "test")
+        }
     }
 }

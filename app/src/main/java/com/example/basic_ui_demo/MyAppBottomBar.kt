@@ -1,7 +1,5 @@
 package com.example.basic_ui_demo
 
-import android.content.Context
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,61 +16,69 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.currentCoroutineContext
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.basic_ui_demo.screen.Screen
 
 @Composable
-fun MyAppBottomBar(navController: NavController){
-    BottomAppBar (
+fun MyAppBottomBar(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    when(navBackStackEntry?.destination?.route.toString()) {
+        Screen.MatchDetailScreen.route -> {}
+        else -> BottomAppBar1(navController)
+    }
+}
+
+@Composable
+fun BottomAppBar1(navController: NavController){
+    BottomAppBar(
         modifier = Modifier
-    ){
+    ) {
         Row(
             modifier = Modifier.height(20.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Box(modifier = Modifier.weight(1F)){
+            Box(modifier = Modifier.weight(1F)) {
                 IconAndText(
-                    modifier = Modifier.clickable {
-                        navController.navigate(Screen.NewsScreen.route)
-                    },
+                    modifier = Modifier,
+                    navController = navController,
                     imageVector = Icons.Rounded.AccountBox,
-                    text = stringResource(id = R.string.news)
+                    destinationRoute = Screen.NewsScreen.route
                 )
             }
 
-            Box(modifier = Modifier.weight(1F)){
+            Box(modifier = Modifier.weight(1F)) {
                 IconAndText(
-                    modifier = Modifier.clickable {
-                        navController.navigate(Screen.MatchesScreen.route)
-                    },
+                    modifier = Modifier,
+                    navController = navController,
                     imageVector = Icons.Rounded.AddCircle,
-                    text = stringResource(id = R.string.match)
+                    destinationRoute = Screen.MatchesScreen.route,
+                    navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
                 )
             }
 
-            Box(modifier = Modifier.weight(1F)){
+            Box(modifier = Modifier.weight(1F)) {
                 IconAndText(
-                    modifier = Modifier.clickable {
-                        navController.navigate(Screen.TeamsScreen.route)
-                    },
+                    modifier = Modifier,
+                    navController = navController,
                     imageVector = Icons.Rounded.Call,
-                    text = stringResource(id = R.string.team)
+                    destinationRoute = Screen.TeamsScreen.route
                 )
             }
-            Box(modifier = Modifier.weight(1F)){
+            Box(modifier = Modifier.weight(1F)) {
                 IconAndText(
-                    modifier = Modifier.clickable {
-                        navController.navigate(Screen.DataScreen.route)
-                    },
+                    modifier = Modifier,
+                    navController = navController,
                     imageVector = Icons.Rounded.CheckCircle,
-                    text = stringResource(id = R.string.data)
+                    destinationRoute = Screen.DataScreen.route
                 )
             }
 
@@ -83,36 +89,26 @@ fun MyAppBottomBar(navController: NavController){
 @Composable
 fun IconAndText(
     modifier: Modifier = Modifier,
+    navController: NavController,
     imageVector: ImageVector,
-    text: String
-){
+    destinationRoute: String,
+    navOptions: NavOptions? = null
+) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth()
-    ){
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate(destinationRoute, navOptions)
+            }
+    ) {
         Column {
             Icon(
                 modifier = modifier,
                 imageVector = imageVector,
                 contentDescription = ""
             )
-            Text(text = text)
+            Text(text = destinationRoute)
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewIconAndText(){
-    IconAndText(
-        imageVector = Icons.Rounded.AddCircle,
-        text = stringResource(id = R.string.match)
-    )
-}
-
-
-@Preview
-@Composable
-fun PreviewBottomBar(){
-    MyAppBottomBar(navController = NavController(LocalContext.current))
 }
