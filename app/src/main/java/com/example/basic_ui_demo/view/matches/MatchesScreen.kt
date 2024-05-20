@@ -175,12 +175,12 @@ fun MatchRow(
     modifier: Modifier = Modifier,
     navController: NavController,
     match: Match
-) {  //下面的matchRow的重载形式，添加了导航功能，用于导航到比赛详情页
+) {  //matchRow的重载形式，添加了导航功能，用于导航到比赛详情页
     MatchRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                MatchesViewModel.match = match
+                MatchesViewModel.match = match  //在viewModel中存储被点击的match
                 navController.navigate(Screen.MatchDetailScreen.route)
             },
         match = match

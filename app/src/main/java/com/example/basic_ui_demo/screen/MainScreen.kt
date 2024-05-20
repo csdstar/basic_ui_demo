@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.basic_ui_demo.MyAppBottomBar
 import com.example.basic_ui_demo.MyAppTopBar
+import com.example.basic_ui_demo.view.data.StandingScreen
 import com.example.basic_ui_demo.view.matches.MatchDetailScreen
 import com.example.basic_ui_demo.view.matches.MatchesScreen
 import com.example.footballapidemo.view_model.MatchesViewModel
@@ -68,6 +69,9 @@ fun MainScreen() {
                 }
                 composable(Screen.TestScreen.route) {
                     TestScreen(navController = navController)
+                }
+                composable(Screen.StandingScreen.route){
+                    StandingScreen(competition = MatchesViewModel.getCurrentCompetitionByMatch())
                 }
             }
         }

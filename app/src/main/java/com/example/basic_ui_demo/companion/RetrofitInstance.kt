@@ -28,5 +28,4 @@ object RetrofitInstance{
             .build()
             .create(DataInterface::class.java)
     }
-
 }

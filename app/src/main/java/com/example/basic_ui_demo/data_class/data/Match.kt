@@ -28,7 +28,7 @@ data class Match(
     val penalties: List<Any>?,
     val referees: List<Any>?,
     val score: Score,
-    val season: Season?,
+    val season: Season,
     val stage: Stage,
     val status: Status?,
     val substitutions: List<Any>?,
@@ -64,5 +64,9 @@ data class Match(
         val chinaLocalDate = convertUtcToChinaLocalDate()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return chinaLocalDate.format(formatter)
+    }
+
+    fun getCurrentSeasonYear(): Int {
+        return this.season.startDate.split("-")[0].toInt()
     }
 }

@@ -1,6 +1,6 @@
 package com.example.footballapidemo.data_class.data
 
-data class HomeTeam(
+data class AggregatesTeam(
     val draws: Int,
     val id: Int,
     val losses: Int,

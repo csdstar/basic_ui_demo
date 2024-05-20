@@ -1,13 +1,17 @@
 package com.example.basic_ui_demo.data_class.data
 
-import com.example.footballapidemo.data_class.data.AwayTeam
-import com.example.footballapidemo.data_class.data.HomeTeam
+import com.example.footballapidemo.data_class.data.AggregatesTeam
 
-data class Aggregates(
-    val awayTeam: AwayTeam,
-    val homeTeam: HomeTeam,
+data class Aggregates(  //统计量
+    val awayTeam: AggregatesTeam,
+    val homeTeam: AggregatesTeam,
     val numberOfMatches: Int,
     val totalGoals: Int
-)
+) {
+    fun returnTeam(isHome: Boolean): AggregatesTeam{
+        return if (isHome) homeTeam
+        else awayTeam
+    }
+}
 
-//统计量
+

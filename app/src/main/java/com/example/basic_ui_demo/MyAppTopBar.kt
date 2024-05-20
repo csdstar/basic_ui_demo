@@ -7,14 +7,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -34,8 +38,12 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.example.basic_ui_demo.screen.Screen
 import com.example.footballapidemo.data_class.data.Match
+import com.example.footballapidemo.view_model.MatchesViewModel
 import com.example.footballapidemo.view_model.MatchesViewModel.Companion.getMatchTitle
+import com.example.footballapidemo.view_model.MatchesViewModel.Companion.isLeague
 import com.example.footballapidemo.view_model.MatchesViewModel.Companion.match
+
+val DetailScreenColor = Color(0xFF6612A3).copy(0.8f)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,20 +53,10 @@ fun MyAppTopBar(navController: NavController, nav: NavBackStackEntry?) {
         Screen.NewsScreen.route -> GeneralTopBar(navController)
         Screen.DataScreen.route -> GeneralTopBar(navController)
         Screen.MatchDetailScreen.route -> MatchDetailTopBar(navController, match)
+        Screen.StandingScreen.route -> StandingTopBar(navController)
         else -> {}
     }
 }
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Composable
-//fun MyAppTopBar(nav: NavBackStackEntry?) {
-//    val curRoute = nav?.destination?.route
-//    when (curRoute) {
-//        Screen.NewsScreen.route -> GeneralTopBar(nav)
-//        Screen.MatchDetailScreen.route -> MatchDetailTopBar(match)
-//        else -> {}
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +69,7 @@ fun GeneralTopBar(navController: NavController) {
         //左侧导航栏图标
         navigationIcon = {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = "",
                 tint = Color.Black,
                 modifier = Modifier.clickable {
@@ -98,10 +96,10 @@ fun MatchDetailTopBar(navController: NavController, match: Match) {
     CenterAlignedTopAppBar(
         modifier = Modifier
             .height(40.dp),
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(Color.LightGray),
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(DetailScreenColor),
         title = {
             Row(
-                verticalAlignment = Alignment.Bottom,
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -109,31 +107,36 @@ fun MatchDetailTopBar(navController: NavController, match: Match) {
                     fontSize = 15.sp,
                     modifier = Modifier
                         .fillMaxHeight(0.7f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight(0.5f)
-                        .aspectRatio(1f / 1f)
-                        .background(Color.Gray, shape = CircleShape)
-                        .clickable {
-                            //联赛积分榜
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                        contentDescription = "",
+                Spacer(Modifier.width(5.dp))
+                if(isLeague(match)) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize(0.5f)
-                    )
+                            .fillMaxHeight(0.5f)
+                            .aspectRatio(1f / 1f)
+                            .background(Color.LightGray.copy(0.5f), shape = CircleShape)
+                            .clickable {
+                                navController.navigate(Screen.StandingScreen.route)
+                                //导航至联赛积分榜
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .fillMaxSize(0.5f)
+                        )
+                    }
                 }
             }
         },
         //左侧导航栏图标
         navigationIcon = {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = "",
                 tint = Color.Black,
                 modifier = Modifier.clickable {
@@ -150,5 +153,28 @@ fun MatchDetailTopBar(navController: NavController, match: Match) {
                 modifier = Modifier.clickable { }
             )
         }
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StandingTopBar(navController: NavController) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(text = MatchesViewModel.getCompetitionNameByMatch().toString(), color = Color.White)
+        },
+        //左侧导航栏图标
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "",
+                tint = Color.White,
+                modifier = Modifier.clickable {
+                    navController.popBackStack()
+                }
+            )
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(Color(0xFF313131))
     )
 }

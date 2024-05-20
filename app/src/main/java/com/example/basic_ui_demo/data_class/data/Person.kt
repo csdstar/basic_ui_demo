@@ -10,8 +10,8 @@ data class Person(
     val lastUpdated: String,
     val name: String,
     val nationality: String,
-    val position: String,
-    val shirtNumber: Int,
+    val position: String?,
+    val shirtNumber: Int?,
     val runningCompetitions: List<RunningCompetition>?,
     val contract: Contract?
 )

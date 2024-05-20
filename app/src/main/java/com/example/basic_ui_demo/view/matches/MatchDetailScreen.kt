@@ -1,6 +1,7 @@
 package com.example.basic_ui_demo.view.matches
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
@@ -8,8 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -17,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,16 +35,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.basic_ui_demo.DetailScreenColor
 import com.example.basic_ui_demo.companion.ApiViewModel
 import com.example.basic_ui_demo.companion.RetrofitInstance
 import com.example.basic_ui_demo.companion.convertUtcToChinaDate
 import com.example.basic_ui_demo.companion.convertUtcToChinaTime
+import com.example.basic_ui_demo.data_class.data.Aggregates
 import com.example.basic_ui_demo.data_class.data.Status
+import com.example.basic_ui_demo.screen.TAG
 import com.example.footballapidemo.data_class.data.Match
 import com.example.footballapidemo.data_class.data.Team
 import com.example.footballapidemo.view_model.MatchesViewModel
+import java.text.DecimalFormat
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -50,8 +59,10 @@ fun MatchDetailScreen() {
     var isLoading by remember { mutableStateOf(false) }
     var isError by remember { mutableStateOf(false) }
     val list = remember { mutableStateListOf<Match>() }
+    var aggregates by remember { mutableStateOf<Aggregates?>(null) }
 
     LaunchedEffect(Unit) {
+        //加载历史交手记录
         isLoading = true
         val api = RetrofitInstance.api
         val head2headJson = ApiViewModel.callApi {
@@ -60,6 +71,8 @@ fun MatchDetailScreen() {
         if (head2headJson == null)
             isError = true
         else {
+            Log.d(TAG, head2headJson.aggregates.toString())
+            aggregates = (head2headJson.aggregates)
             list.addAll(head2headJson.matches)
             list.sortBy { it.convertUtcToChinaLocalDate() }
         }
@@ -71,11 +84,12 @@ fun MatchDetailScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        //顶部界面，两侧是球队图标，中间为比赛信息
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .background(Color.LightGray),
+                .background(DetailScreenColor),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TeamDetailBox(
@@ -111,15 +125,17 @@ fun MatchDetailScreen() {
             )
         }
         Text(
-            text = "以往比赛",
+            text = "近期比赛",
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Blue),
-            textAlign = TextAlign.Center
+                .background(Color.Gray),
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
+            color = Color.White
         )
-        if (isLoading) {
+        if (isLoading)
             CircularProgressIndicator()
-        } else if (isError) {
+        else if (isError) {
             Column(Modifier.fillMaxWidth()) {
                 Icon(
                     imageVector = Icons.Default.Warning, // 使用警告图标
@@ -130,16 +146,34 @@ fun MatchDetailScreen() {
                 Text(text = "error")
             }
         } else {
-            LazyColumn {
+            //近期比赛列表
+            LazyColumn(Modifier.fillMaxWidth()) {
                 list.forEach {
                     item { MatchHead2HeadRow(match = it) }
                 }
+                item { HorizontalDivider(thickness = 2.dp, color = Color.Black) }
             }
+            Spacer(modifier = Modifier.height(30.dp))
+
+            //历史统计
+            Text(
+                text = "历史统计",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Gray),
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            HorizontalDivider(thickness = 1.dp, color = Color.Black)
+            TotalHead2HeadBar()
+            TotalHead2HeadData(match, aggregates, true)
+            TotalHead2HeadData(match, aggregates, false)
         }
     }
-
 }
 
+//球队图标和名字
 @Composable
 fun TeamDetailBox(modifier: Modifier, team: Team) {
     Box(
@@ -156,12 +190,17 @@ fun TeamDetailBox(modifier: Modifier, team: Team) {
             Text(
                 text = team.shortName,
                 textAlign = TextAlign.Center,
-                modifier = Modifier
+                modifier = Modifier.padding(15.dp),
+                color = Color.White,
+                fontSize = 20.sp,
+                maxLines = 1, // 设置最大行数为1
+                overflow = TextOverflow.Ellipsis // 设置文本溢出时显示省略号
             )
         }
     }
 }
 
+//显示比赛信息
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CenterDetailBox(modifier: Modifier, match: Match) {
@@ -173,25 +212,29 @@ fun CenterDetailBox(modifier: Modifier, match: Match) {
             Text(
                 text = convertUtcToChinaDate(match.utcDate),
                 fontSize = 15.sp,
-                modifier = Modifier.padding(5.dp)
+                modifier = Modifier.padding(5.dp),
+                color = Color.White,
             )
             Text(
                 text = convertUtcToChinaTime(match.utcDate),
                 fontSize = 15.sp,
-                modifier = Modifier.padding(5.dp)
+                modifier = Modifier.padding(5.dp),
+                color = Color.White,
             )
             Text(
                 text = if (match.status == Status.FINISHED)
                     "${match.score.fullTime.home} - ${match.score.fullTime.away}"
                 else " VS ",
                 fontSize = 30.sp,
-                modifier = Modifier.padding(5.dp)
+                modifier = Modifier.padding(5.dp),
+                color = Color.White,
             )
             Text(
                 fontSize = 15.sp,
+                color = Color.White,
                 text = if (match.status == Status.FINISHED)
                     "半场${match.score.halfTime.home} - ${match.score.halfTime.away}"
-                else match.status?.toChineseString()?:""
+                else match.status?.toChineseString() ?: ""
             )
         }
     }
@@ -207,10 +250,161 @@ fun MatchHead2HeadRow(match: Match) {
         Text(
             text = "${match.convertUtcToChinaDate()} ${match.convertUtcToChinaTime()}",
             textAlign = TextAlign.Center,
-            modifier = Modifier.background(Color.LightGray)
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
         )
         Row {
             MatchRow(match = match)  //复用了前面的matchRow
         }
     }
+}
+
+@Composable
+fun TotalHead2HeadBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color.Gray), // 设置表头的背景颜色
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "球队",
+            modifier = Modifier
+                .weight(1f)  // 使用 weight 分配空间
+                .padding(8.dp),  //padding
+            color = Color.White, // 设置文本颜色
+            textAlign = TextAlign.Start // 设置左对齐
+        )
+        Text(
+            text = "赛",
+            modifier = Modifier
+                .padding(12.dp),
+            color = Color.White, // 设置文本颜色
+            textAlign = TextAlign.End // 设置右对齐
+        )
+        Text(
+            text = "胜",
+            modifier = Modifier
+                .padding(8.dp),
+            color = Color.White, // 设置文本颜色
+            textAlign = TextAlign.End // 设置右对齐
+        )
+        Text(
+            text = "平",
+            modifier = Modifier
+                .padding(8.dp),
+            color = Color.White, // 设置文本颜色
+            textAlign = TextAlign.End // 设置右对齐
+        )
+        Text(
+            text = "负",
+            modifier = Modifier
+                .padding(8.dp),
+            color = Color.White, // 设置文本颜色
+            textAlign = TextAlign.End // 设置右对齐
+        )
+        Text(
+            text = "胜率",
+            modifier = Modifier
+                .padding(15.dp),
+            color = Color.White, // 设置文本颜色
+            textAlign = TextAlign.End // 设置右对齐
+        )
+    }
+}
+
+//历史统计数据栏
+@Composable
+fun TotalHead2HeadData(match: Match, aggregates: Aggregates?, isHome: Boolean) {
+    if (aggregates == null) {  //空对象检查
+        Log.d(TAG, "null aggregates")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(20.dp)
+                    .weight(1f) // 使用 weight 分配空间
+                    .padding(8.dp), // 设置内边距
+            ) {
+                CrestImage(
+                    picUrl =
+                    if (isHome) match.homeTeam.crest
+                    else match.awayTeam.crest
+                )
+            }
+            Text(
+                text = "null",
+                modifier = Modifier
+                    .padding(15.dp),
+                color = Color.White, // 设置文本颜色
+                textAlign = TextAlign.End // 设置右对齐
+            )
+        }
+    } else {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f) // 使用 weight 分配全部剩余空间，使得Box的内容在左侧
+                    .height(40.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                CrestImage(
+                    picUrl =
+                    if (isHome) match.homeTeam.crest
+                    else match.awayTeam.crest
+                )
+            }
+            //总场次
+            Text(
+                text = aggregates.numberOfMatches.toString(),
+                modifier = Modifier
+                    .padding(12.dp),
+                textAlign = TextAlign.End // 设置右对齐
+            )
+            //胜
+            Text(
+                text = aggregates.returnTeam(isHome).wins.toString(),
+                //这里用的是在数据类Aggregates中定义的函数，便于返回homeTeam和awayTeam
+                modifier = Modifier
+                    .padding(8.dp),
+                textAlign = TextAlign.End // 设置右对齐
+            )
+            //平
+            Text(
+                text = aggregates.returnTeam(isHome).draws.toString(),
+                modifier = Modifier
+                    .padding(8.dp),
+                textAlign = TextAlign.End // 设置右对齐
+            )
+            //负
+            Text(
+                text = aggregates.returnTeam(isHome).losses.toString(),
+                modifier = Modifier
+                    .padding(8.dp),
+                textAlign = TextAlign.End // 设置右对齐
+            )
+            //胜率
+            Text(
+                text = (aggregates.returnTeam(isHome).wins.toDouble() / aggregates.numberOfMatches.toDouble()).toPercentageString(),
+                modifier = Modifier
+                    .padding(15.dp),
+                textAlign = TextAlign.End // 设置右对齐
+            )
+        }
+        HorizontalDivider(thickness = 1.dp, color = Color.Black)
+    }
+}
+
+fun Double.toPercentageString(): String {
+    val percentage = this * 100
+    val decimalFormat = DecimalFormat("#0.00")
+    return "${decimalFormat.format(percentage)}%"
 }

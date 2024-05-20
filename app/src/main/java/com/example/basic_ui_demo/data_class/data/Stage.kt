@@ -26,36 +26,36 @@ enum class Stage(val value: String = "") {
     APERTURA("APERTURA"),
     CHAMPIONSHIP("CHAMPIONSHIP"),
     RELEGATION("RELEGATION"),
-    RELEGATION_ROUND("RELEGATION_ROUND")
-}
+    RELEGATION_ROUND("RELEGATION_ROUND");
 
-fun getChineseDescription(stage: Stage): String {
-    return when (stage) {
-        Stage.FINAL -> "总决赛"
-        Stage.THIRD_PLACE -> "季军赛"
-        Stage.SEMI_FINALS -> "半决赛"
-        Stage.QUARTER_FINALS -> "四分之一决赛"
-        Stage.LAST_16 -> "16强赛"
-        Stage.LAST_32 -> "32强赛"
-        Stage.LAST_64 -> "64强赛"
-        Stage.ROUND_4 -> "第4轮"
-        Stage.ROUND_3 -> "第3轮"
-        Stage.ROUND_2 -> "第2轮"
-        Stage.ROUND_1 -> "第1轮"
-        Stage.GROUP_STAGE -> "小组赛"
-        Stage.PRELIMINARY_ROUND -> "预赛"
-        Stage.QUALIFICATION -> "资格赛"
-        Stage.QUALIFICATION_ROUND_1 -> "资格赛第1轮"
-        Stage.QUALIFICATION_ROUND_2 -> "资格赛第2轮"
-        Stage.QUALIFICATION_ROUND_3 -> "资格赛第3轮"
-        Stage.PLAYOFF_ROUND_1 -> "季后赛第1轮"
-        Stage.PLAYOFF_ROUND_2 -> "季后赛第2轮"
-        Stage.PLAYOFFS -> "季后赛"
-        Stage.REGULAR_SEASON -> "常规赛"
-        Stage.CLAUSURA -> "闭幕赛"
-        Stage.APERTURA -> "开幕赛"
-        Stage.CHAMPIONSHIP -> "冠军赛"
-        Stage.RELEGATION -> "降级赛"
-        Stage.RELEGATION_ROUND -> "降级赛轮次"
+    fun getChineseDescription(): String {
+        return when (this) {
+            FINAL -> "总决赛"
+            THIRD_PLACE -> "季军赛"
+            SEMI_FINALS -> "半决赛"
+            QUARTER_FINALS -> "四分之一决赛"
+            LAST_16 -> "16强赛"
+            LAST_32 -> "32强赛"
+            LAST_64 -> "64强赛"
+            ROUND_4 -> "第4轮"
+            ROUND_3 -> "第3轮"
+            ROUND_2 -> "第2轮"
+            ROUND_1 -> "第1轮"
+            GROUP_STAGE -> "小组赛"
+            PRELIMINARY_ROUND -> "预赛"
+            QUALIFICATION -> "资格赛"
+            QUALIFICATION_ROUND_1 -> "资格赛第1轮"
+            QUALIFICATION_ROUND_2 -> "资格赛第2轮"
+            QUALIFICATION_ROUND_3 -> "资格赛第3轮"
+            PLAYOFF_ROUND_1 -> "季后赛第1轮"
+            PLAYOFF_ROUND_2 -> "季后赛第2轮"
+            PLAYOFFS -> "季后赛"
+            REGULAR_SEASON -> "常规赛"
+            CLAUSURA -> "闭幕赛"
+            APERTURA -> "开幕赛"
+            CHAMPIONSHIP -> "冠军赛"
+            RELEGATION -> "降级赛"
+            RELEGATION_ROUND -> "降级赛轮次"
+        }
     }
 }

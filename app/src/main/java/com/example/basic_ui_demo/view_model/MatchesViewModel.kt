@@ -16,7 +16,7 @@ import com.example.basic_ui_demo.companion.convertUtcToChinaLocalDate
 import com.example.footballapidemo.data_class.data.Match
 import com.example.basic_ui_demo.companion.getCurrentDateString
 import com.example.basic_ui_demo.companion.getDateStringWithOffset
-import com.example.footballapidemo.data_class.data.getChineseDescription
+import com.example.footballapidemo.data_class.data.Competition
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -27,9 +27,22 @@ class MatchesViewModel : ViewModel() {
         val competitionsCode =
             listOf("", "CL", "PL", "FL1", "BL1", "SA", "BSA", "ELC")
         //所有联赛的名字及索引
+
         lateinit var match: Match
+        //存储被点击的MatchRow对应的match
 
         fun getCompetitionNameByMatch(match: Match): String?{
+            return if (match.matchday == null)
+                null
+            else{
+                val index = competitionsCode.indexOf(match.competition.code)
+                if(index == -1)
+                    match.competition.code
+                else competitions[index]
+            }
+        }
+
+        fun getCompetitionNameByMatch(): String?{
             return if (match.matchday == null)
                 null
             else{
@@ -44,8 +57,8 @@ class MatchesViewModel : ViewModel() {
             return match.competition.type == "LEAGUE"
         }
 
-        fun getStageNameByMatch(match: Match): String {
-            return getChineseDescription(match.stage)
+        private fun getStageNameByMatch(match: Match): String {
+            return match.stage.getChineseDescription()
         }
 
         fun getMatchTitle(match: Match) :String{
@@ -56,6 +69,10 @@ class MatchesViewModel : ViewModel() {
                 val stage = getStageNameByMatch(match)
                 "$competitionName $stage"
             }
+        }
+
+        fun getCurrentCompetitionByMatch(): Competition{
+            return match.competition
         }
     }
 

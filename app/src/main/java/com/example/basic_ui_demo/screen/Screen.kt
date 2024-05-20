@@ -8,4 +8,6 @@ sealed class Screen(val route:String) {
     data object TeamsScreen: Screen("Teams")
     data object DataScreen: Screen("Data")
     data object MatchDetailScreen: Screen("MatchDetail")
+    data object ScoreScreen: Screen("Score")
+    data object  StandingScreen: Screen("standing")
 }
