@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basic_ui_demo.screen.TAG
+import com.example.basic_ui_demo.view_model.DataViewModel
 import com.example.footballapidemo.data_class.data.Competition
 import com.example.footballapidemo.view_model.MatchesViewModel
 
@@ -67,6 +69,30 @@ fun StandingScreen(competition: Competition?) {
                 "球员榜" -> ScorerStandingCompose(competition, selectedSeason)
             }
         }
+}
+
+//传入viewModel的重载形式，用于切换不同联赛的排行榜
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+@Composable
+fun StandingScreen(viewModel: DataViewModel, index: Int) {
+    Log.d(TAG, "indexxxx: $index")
+    var selectedTab by remember { mutableStateOf("球队榜") }
+    var selectedSeason by remember { mutableStateOf("2023") }
+
+    Column {
+        DetailTabsBar(
+            onTabSelected = { selectedTab = it },
+            onSeasonSelect = {
+                selectedSeason = it
+            }
+        )
+        key(index, selectedSeason) {
+            when (selectedTab) {
+                "球队榜" -> TeamStandingCompose(viewModel, index, selectedSeason)
+                "球员榜" -> ScorerStandingCompose(viewModel, index, selectedSeason)
+            }
+        }
+    }
 }
 
 //顶部菜单栏，包含一个选择season的下拉菜单和一个榜单选择指示器

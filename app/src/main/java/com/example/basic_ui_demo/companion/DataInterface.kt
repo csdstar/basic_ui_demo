@@ -57,7 +57,8 @@ interface DataInterface {
     @GET("competitions/{competition}/scorers")
     suspend fun getCompetitionScorers(
         @Path("competition") competitionCode: String,
-        @Query("season") season: Int = 2023
+        @Query("season") season: Int = 2023,
+        @Query("limit") limit: Int = 20
     ): Response<ScorerJson>
 
 

@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -57,16 +55,11 @@ fun CrestImage(picUrl: String?) {  //自动fillMaxHeight并设定长宽比
                 }
             },
             error = {
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.error_icon),
                     contentDescription = "",
-                    Modifier
-                        .aspectRatio(1f / 1f)
-                        .fillMaxHeight()
-//                        .clickable {
-//                            mutUrl = null
-//                            mutUrl = picUrl
-//                        }
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.aspectRatio(1f / 1f).fillMaxHeight()
                 )
             }
         )

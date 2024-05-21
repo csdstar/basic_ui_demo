@@ -81,9 +81,6 @@ fun MatchesScreen(navController: NavController, viewModel: MatchesViewModel) {
     val matchGroups = remember(curIndex) { viewModel.pagesData[curIndex].matchGroups }
     //当前页面的matchGroup
 
-    //val listState = remember(curIndex) { viewModel.pagesData[curIndex].listState }
-    //当前页面的LazyListState
-
     val isLoading by viewModel.isLoading
 
     val isSearching by viewModel.isSearching
@@ -295,7 +292,7 @@ fun RightTeamBox(modifier: Modifier, team: Team) {
             }
             Text(
                 modifier = Modifier.padding(10.dp),
-                text = team.shortName.toString(),
+                text = team.shortName,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -325,6 +322,12 @@ fun MatchGroup(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) { Text(text = date) }
+            }
+
+            item {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(text = "查询无结果，请尝试寻找其他时间的比赛", textAlign = TextAlign.Center)
+                }
             }
         }
     } else {

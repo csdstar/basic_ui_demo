@@ -36,6 +36,7 @@ import com.example.basic_ui_demo.companion.ApiViewModel
 import com.example.basic_ui_demo.companion.RetrofitInstance
 import com.example.basic_ui_demo.screen.TAG
 import com.example.basic_ui_demo.view.matches.CrestImage
+import com.example.basic_ui_demo.view_model.DataViewModel
 import com.example.footballapidemo.data_class.data.Competition
 import com.example.footballapidemo.data_class.data.Table
 
@@ -65,23 +66,84 @@ fun TeamStandingCompose(competition: Competition, season: MutableState<String>) 
     StandingDataHeader()
 
     if (isError)
-        Box(contentAlignment = Alignment.Center){
-            Box(modifier = Modifier.fillMaxSize(0.5f)){
-                Image(painter = painterResource(id = R.drawable.error_icon), contentDescription = "")
+        Box(contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxSize(0.5f)) {
+                Image(
+                    painter = painterResource(id = R.drawable.error_icon),
+                    contentDescription = ""
+                )
             }
         }
     else if (isLoading)
-        Box(contentAlignment = Alignment.Center){
+        Box(contentAlignment = Alignment.Center) {
             CircularProgressIndicator(Modifier.fillMaxSize(0.3f))
         }
     else {
         LazyColumn(Modifier.fillMaxSize()) {
-            items(tableList){
+            items(tableList) {
                 TableDataRow(it)
             }
         }
     }
+}
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+@Composable
+fun TeamStandingCompose(viewModel: DataViewModel, index: Int, season: String) {
+    var isLoading by remember { mutableStateOf(true) }
+    var isError by remember { mutableStateOf(false) }
+    val tableList = remember { mutableListOf<Table>() }
+
+    //初始化，获取json排行榜数据
+    LaunchedEffect(Unit) {
+        isLoading = true
+        val standingsJson = viewModel.pagesData[index].seasonMap[season]?.standingsJson
+        if (standingsJson != null) {
+            //若viewModel中存储有上次的json则直接使用
+            Log.d(TAG, "获取上次的json,$standingsJson")
+            tableList.addAll(standingsJson.standings[0].table)
+            isError = false
+        } else {
+            //否则发送网络请求获取json，更新viewModel中的页面数据
+            val api = RetrofitInstance.api
+            val code = DataViewModel.competitionsCode[index]
+
+            val newStandingsJson = ApiViewModel.callApi {
+                api.getCompetitionStandings(code, season.toInt())
+            }
+            isError = newStandingsJson?.let {
+                tableList.clear()
+                tableList.addAll(it.standings[0].table)
+                viewModel.setStandingsJson(newStandingsJson,season)
+                Log.d(TAG, "新json" + tableList[0].toString())
+                false
+            } ?: true
+        }
+        isLoading = false
+    }
+
+    StandingDataHeader()
+
+    if (isError)
+        Box(contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxSize(0.5f)) {
+                Image(
+                    painter = painterResource(id = R.drawable.error_icon),
+                    contentDescription = ""
+                )
+            }
+        }
+    else if (isLoading)
+        Box(contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(Modifier.fillMaxSize(0.3f))
+        }
+    else {
+        LazyColumn(Modifier.fillMaxSize()) {
+            items(tableList) {
+                TableDataRow(it)
+            }
+        }
+    }
 }
 
 @Composable
@@ -142,12 +204,12 @@ fun TableDataRow(table: Table) {
         ) {
             CrestImage(picUrl = table.team.crest)
         }
-        DataColumnText(Modifier.width(30.dp),text = table.playedGames.toString())
-        DataColumnText(Modifier.width(30.dp),text = table.won.toString())
-        DataColumnText(Modifier.width(30.dp),text = table.draw.toString())
-        DataColumnText(Modifier.width(30.dp),text = table.lost.toString())
-        DataColumnText(Modifier.width(50.dp),text = "${table.goalsFor}/${table.goalsAgainst}")
-        DataColumnText(Modifier.width(30.dp),text = table.points.toString())
+        DataColumnText(Modifier.width(30.dp), text = table.playedGames.toString())
+        DataColumnText(Modifier.width(30.dp), text = table.won.toString())
+        DataColumnText(Modifier.width(30.dp), text = table.draw.toString())
+        DataColumnText(Modifier.width(30.dp), text = table.lost.toString())
+        DataColumnText(Modifier.width(50.dp), text = "${table.goalsFor}/${table.goalsAgainst}")
+        DataColumnText(Modifier.width(30.dp), text = table.points.toString())
     }
 }
 
