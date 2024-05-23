@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
-import com.example.basic_ui_demo.screen.MainScreen
+import com.example.basic_ui_demo.view.screen.MainScreen
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)

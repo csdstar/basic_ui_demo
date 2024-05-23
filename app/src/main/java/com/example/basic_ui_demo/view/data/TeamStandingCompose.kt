@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basic_ui_demo.R
 import com.example.basic_ui_demo.companion.ApiViewModel
-import com.example.basic_ui_demo.companion.RetrofitInstance
-import com.example.basic_ui_demo.screen.TAG
-import com.example.basic_ui_demo.view.matches.CrestImage
+import com.example.basic_ui_demo.companion.data.RetrofitInstance
+import com.example.basic_ui_demo.view.screen.TAG
+import com.example.basic_ui_demo.view.CrestImage
 import com.example.basic_ui_demo.view_model.DataViewModel
 import com.example.footballapidemo.data_class.data.Competition
 import com.example.footballapidemo.data_class.data.Table
@@ -51,7 +51,7 @@ fun TeamStandingCompose(competition: Competition, season: MutableState<String>) 
         isLoading = true
         val api = RetrofitInstance.api
         val standingsJson = ApiViewModel.callApi {
-            api.getCompetitionStandings(competition.code, season.value.toInt())
+            api.getCompetitionStandings(competition.code, season.value)
         }
         isError = standingsJson?.let {
             tableList.clear()
@@ -109,7 +109,7 @@ fun TeamStandingCompose(viewModel: DataViewModel, index: Int, season: String) {
             val code = DataViewModel.competitionsCode[index]
 
             val newStandingsJson = ApiViewModel.callApi {
-                api.getCompetitionStandings(code, season.toInt())
+                api.getCompetitionStandings(code, season)
             }
             isError = newStandingsJson?.let {
                 tableList.clear()

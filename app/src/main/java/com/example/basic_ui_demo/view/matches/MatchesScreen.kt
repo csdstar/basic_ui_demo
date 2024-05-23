@@ -43,16 +43,15 @@ import com.example.basic_ui_demo.companion.convertUtcToChinaTime
 import com.example.basic_ui_demo.companion.getCurrentDateString
 import com.example.basic_ui_demo.companion.getDateStringWithOffset
 import com.example.basic_ui_demo.data_class.data.Status
-import com.example.basic_ui_demo.screen.Screen
-import com.example.basic_ui_demo.screen.TAG
+import com.example.basic_ui_demo.view.screen.Screen
+import com.example.basic_ui_demo.view.screen.TAG
+import com.example.basic_ui_demo.view.CrestImage
 import com.example.footballapidemo.data_class.data.Match
 import com.example.footballapidemo.data_class.data.Team
-import com.example.footballapidemo.view.matches.FloatingButtonCompose
 import com.example.footballapidemo.view.matches.SearchCompose
-import com.example.footballapidemo.view.matches.addMatchesByCompetitionCode
-import com.example.footballapidemo.view_model.MatchesViewModel
-import com.example.footballapidemo.view_model.MatchesViewModel.Companion.competitionsCode
-import com.example.footballapidemo.view_model.MatchesViewModel.Companion.getMatchTitle
+import com.example.basic_ui_demo.view_model.MatchesViewModel
+import com.example.basic_ui_demo.view_model.MatchesViewModel.Companion.competitionsCode
+import com.example.basic_ui_demo.view_model.MatchesViewModel.Companion.getMatchTitle
 import com.lt.compose_views.compose_pager.ComposePager
 import com.lt.compose_views.compose_pager.rememberComposePagerState
 import com.lt.compose_views.pager_indicator.TextPagerIndicator
@@ -62,6 +61,7 @@ import com.lt.compose_views.refresh_layout.VerticalRefreshableLayout
 import com.lt.compose_views.refresh_layout.rememberRefreshLayoutState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -87,8 +87,21 @@ fun MatchesScreen(navController: NavController, viewModel: MatchesViewModel) {
 
     val apiMessage by ApiViewModel.message
 
+    //弹出查询框
     if (isSearching)
         SearchCompose(viewModel)
+
+    //整个screen的初始化加载,在后台加载除第一页之外的其他页面数据
+    LaunchedEffect(Unit) {
+        competitionsCode.forEachIndexed{ index,code ->
+            val dateFrom = viewModel.pagesData[index].dateFrom.value
+            val dateTo = viewModel.pagesData[index].dateTo.value
+            when(index){
+                0 -> {viewModel.initDone(0)}
+                else ->{ initLoadingPage(code, dateFrom, dateTo, index, viewModel) }
+            }
+        }
+    }
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
@@ -365,7 +378,7 @@ fun topRefresh(  //顶部刷新
     viewModel: MatchesViewModel
 ): (RefreshLayoutState.() -> Unit) = {
     CoroutineScope(Dispatchers.IO).launch {
-        val index by viewModel.index
+        val index = viewModel.index
         val code = competitionsCode[index]
         val days: Long = if (index == 0) 3 else 15
         var dateFrom by viewModel.pagesData[index].dateFrom
@@ -384,7 +397,7 @@ fun bottomRefresh(  //底部加载
     viewModel: MatchesViewModel
 ): (RefreshLayoutState.() -> Unit) = {
     CoroutineScope(Dispatchers.IO).launch {
-        val index by viewModel.index
+        val index = viewModel.index
         val code = competitionsCode[index]
         val days: Long = if (index == 0) 3 else 15
         var dateTo by viewModel.pagesData[index].dateTo
@@ -402,21 +415,21 @@ fun bottomRefresh(  //底部加载
 suspend fun pageInitialize(viewModel: MatchesViewModel, curIndex: Int) {
     //每次切换页面时进行的初始化加载
 
-    var vmIndex by viewModel.index
-    //viewModel中的index
     var isLoading by viewModel.isLoading
     var isSearching by viewModel.isSearching
 
-
     isSearching = false
     isLoading = true
-    vmIndex = curIndex
+    viewModel.setIndex(curIndex)
     val code = competitionsCode[curIndex]
     val dateFrom = viewModel.pagesData[curIndex].dateFrom.value
     val dateTo = viewModel.pagesData[curIndex].dateTo.value
     Log.d(TAG, "curIndex:$curIndex")
 
-    if (viewModel.pagesData[curIndex].matchGroups.isEmpty())
-        addMatchesByCompetitionCode(code, dateFrom, dateTo, viewModel)
-    isLoading = false
+    viewModel.pagesData[curIndex].initLoading.filter { it }.collect{
+        if (viewModel.pagesData[curIndex].matchGroups.isEmpty()){
+            addMatchesByCompetitionCode(code, dateFrom, dateTo, viewModel)
+        }
+        isLoading = false
+    }
 }

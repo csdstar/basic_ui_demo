@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
@@ -20,19 +21,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.basic_ui_demo.screen.Screen
+import com.example.basic_ui_demo.view.screen.Screen
 
 @Composable
 fun MyAppBottomBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when(navBackStackEntry?.destination?.route.toString()) {
         Screen.MatchDetailScreen.route -> {}
+        Screen.TeamDetailScreen.route -> {}
         else -> BottomAppBar1(navController)
     }
 }
@@ -61,7 +61,7 @@ fun BottomAppBar1(navController: NavController){
                     navController = navController,
                     imageVector = Icons.Rounded.AddCircle,
                     destinationRoute = Screen.MatchesScreen.route,
-                    navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+                    //navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
                 )
             }
 
@@ -104,7 +104,7 @@ fun IconAndText(
     ) {
         Column {
             Icon(
-                modifier = modifier,
+                modifier = modifier.aspectRatio(1f/1f),
                 imageVector = imageVector,
                 contentDescription = ""
             )

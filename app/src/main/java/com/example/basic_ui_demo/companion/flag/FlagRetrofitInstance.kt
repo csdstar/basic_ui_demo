@@ -1,4 +1,4 @@
-package com.example.basic_ui_demo.companion
+package com.example.basic_ui_demo.companion.flag
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -18,8 +18,8 @@ object FlagRetrofitInstance {
 
     val api: FlagInterface by lazy {
         Retrofit.Builder()
-            .baseUrl(FlagRetrofitInstance.BASE_URL)
-            .client(FlagRetrofitInstance.client)
+            .baseUrl(BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(FlagInterface::class.java)

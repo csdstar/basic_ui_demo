@@ -33,10 +33,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.basic_ui_demo.R
 import com.example.basic_ui_demo.companion.ApiViewModel
-import com.example.basic_ui_demo.companion.RetrofitInstance
+import com.example.basic_ui_demo.companion.data.RetrofitInstance
 import com.example.basic_ui_demo.data_class.scorer.Scorer
-import com.example.basic_ui_demo.screen.TAG
-import com.example.basic_ui_demo.view.matches.CrestImage
+import com.example.basic_ui_demo.view.screen.TAG
+import com.example.basic_ui_demo.view.CrestImage
 import com.example.basic_ui_demo.view_model.DataViewModel
 import com.example.footballapidemo.data_class.data.Competition
 
@@ -52,7 +52,7 @@ fun ScorerStandingCompose(competition: Competition, season: MutableState<String>
         isLoading = true
         val api = RetrofitInstance.api
         val scorerJson = ApiViewModel.callApi {
-            api.getCompetitionScorers(competition.code, season.value.toInt())
+            api.getCompetitionScorers(competition.code, season.value)
         }
         isError = scorerJson?.let {
             scorerList.clear()
@@ -106,7 +106,7 @@ fun ScorerStandingCompose(viewModel: DataViewModel, index: Int, season: String) 
             val code = DataViewModel.competitionsCode[index]
 
             val newScorerJson = ApiViewModel.callApi {
-                api.getCompetitionScorers(code, season.toInt())
+                api.getCompetitionScorers(code, season)
             }
             isError = newScorerJson?.let {
                 scorerList.clear()

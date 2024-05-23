@@ -1,6 +1,6 @@
-package com.example.footballapidemo.data_class.news
+package com.example.basic_ui_demo.companion.news
 
-import com.example.basic_ui_demo.news.NewsJson
+import com.example.basic_ui_demo.data_class.news.NewsJson
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

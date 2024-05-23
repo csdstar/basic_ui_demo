@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
@@ -36,12 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.example.basic_ui_demo.screen.Screen
+import com.example.basic_ui_demo.view.screen.Screen
 import com.example.footballapidemo.data_class.data.Match
-import com.example.footballapidemo.view_model.MatchesViewModel
-import com.example.footballapidemo.view_model.MatchesViewModel.Companion.getMatchTitle
-import com.example.footballapidemo.view_model.MatchesViewModel.Companion.isLeague
-import com.example.footballapidemo.view_model.MatchesViewModel.Companion.match
+import com.example.basic_ui_demo.view_model.MatchesViewModel
+import com.example.basic_ui_demo.view_model.MatchesViewModel.Companion.getMatchTitle
+import com.example.basic_ui_demo.view_model.MatchesViewModel.Companion.isLeague
+import com.example.basic_ui_demo.view_model.MatchesViewModel.Companion.match
 
 val DetailScreenColor = Color(0xFF6612A3).copy(0.8f)
 

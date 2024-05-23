@@ -7,7 +7,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.basic_ui_demo.screen.TAG
+import com.example.basic_ui_demo.view.screen.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,14 +37,13 @@ class ApiViewModel : ViewModel() {
         @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
         suspend fun <T> callApi(apiFunc: suspend () -> Response<T>): T? {
             var attempts = 0
-            val maxAttempts = 3
+            val maxAttempts = 2
             var response: Response<T>? = null
 
             //由于网络连接不稳，设置多次请求数据
             while (response == null && attempts < maxAttempts) {
                 attempts++
-                Log.d(TAG, "loading, attempts: $attempts")
-                message.value = "loading, attempts: $attempts"
+                message.value = if(attempts == 1) "正在加载" else "正在重试, 次数: ${attempts - 1}"
                 try {
                     response = withContext(Dispatchers.IO) {
                         apiFunc.invoke()
@@ -65,7 +64,7 @@ class ApiViewModel : ViewModel() {
                 null
             } else if (response?.body() != null) {
                 val body: T = response.body()!!
-                Log.d(TAG, body.toString())
+                Log.d(TAG, "callApi success, body = $body")
                 message.value = "success"
                 body
             } else {

@@ -1,4 +1,4 @@
-package com.example.basic_ui_demo.companion
+package com.example.basic_ui_demo.companion.flag
 
 import retrofit2.Response
 import retrofit2.http.GET

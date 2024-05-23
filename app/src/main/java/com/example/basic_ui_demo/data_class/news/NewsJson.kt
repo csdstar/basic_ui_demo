@@ -1,6 +1,4 @@
-package com.example.basic_ui_demo.news
-
-import com.example.footballapidemo.data_class.news.Result
+package com.example.basic_ui_demo.data_class.news
 
 data class NewsJson(
     val code: Int,

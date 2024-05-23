@@ -24,9 +24,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.footballapidemo.view_model.MatchesViewModel
+import com.example.basic_ui_demo.view_model.MatchesViewModel
 import com.example.basic_ui_demo.companion.formatDate
 import com.example.basic_ui_demo.companion.isDateInvalid
+import com.example.basic_ui_demo.view.matches.addMatchesByCompetitionCode
 import com.lt.compose_views.value_selector.date_selector.DateSelector
 import com.lt.compose_views.value_selector.date_selector.DateSelectorState
 import kotlinx.coroutines.CoroutineScope
@@ -105,7 +106,7 @@ fun searchMatches(
     //按具体时间查找比赛
     var isLoading by viewModel.isLoading
     var isSearching by viewModel.isSearching
-    val index = viewModel.index.intValue
+    val index = viewModel.index
 
     CoroutineScope(Dispatchers.IO).launch {
         isSearching = false

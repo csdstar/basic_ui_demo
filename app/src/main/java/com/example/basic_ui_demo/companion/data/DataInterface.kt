@@ -1,11 +1,12 @@
-package com.example.basic_ui_demo.companion
+package com.example.basic_ui_demo.companion.data
 
 import com.example.basic_ui_demo.data_class.person.Person
 import com.example.basic_ui_demo.data_class.scorer.ScorerJson
+import com.example.basic_ui_demo.data_class.teams.Team
+import com.example.basic_ui_demo.data_class.teams.TeamsJson
 import com.example.footballapidemo.data_class.data.Head2headJson
 import com.example.footballapidemo.data_class.data.MatchesJson
 import com.example.footballapidemo.data_class.data.StandingsJson
-import com.example.footballapidemo.data_class.data.Team
 import com.example.footballapidemo.data_class.data.Teams
 import retrofit2.Response
 import retrofit2.http.GET
@@ -19,7 +20,8 @@ interface DataInterface {
 
     @GET("teams/{teamId}/")
     suspend fun getTeamById(
-        @Path("teamId") teamId: Int
+        @Path("teamId") teamId: Int,
+        @Query("season") season: String = "2023"
     ): Response<Team>
     //OK
 
@@ -39,38 +41,38 @@ interface DataInterface {
     ): Response<MatchesJson>
     //OK
 
-    //获取联赛的teams
-    @GET("competitions/{competition}/teams")
-    suspend fun getLeagueTeams(
-        @Path("competition") competition: String
-    ): Response<Teams>
-    //OK
-
     //获取联赛排行榜
     @GET("competitions/{competition}/standings")
     suspend fun getCompetitionStandings(
         @Path("competition") competitionCode: String,
-        @Query("season") season: Int = 2023
+        @Query("season") season: String = "2023"
     ): Response<StandingsJson>
 
     //获取联赛射手榜
     @GET("competitions/{competition}/scorers")
     suspend fun getCompetitionScorers(
         @Path("competition") competitionCode: String,
-        @Query("season") season: Int = 2023,
+        @Query("season") season: String = "2023",
         @Query("limit") limit: Int = 20
     ): Response<ScorerJson>
 
 
+    //获取联赛teams
+    @GET("competitions/{competitionCode}/teams")
+    suspend fun getCompetitionTeams(
+        @Path("competitionCode") competitionCode: String,
+        @Query("season") season: String = "2023"
+    ): Response<TeamsJson>
+
     //获取特定team的比赛
     @GET("teams/{teamId}/matches")
-    suspend fun getTeamMatchesByTeamId(
+    suspend fun getMatchesByTeamId(
         @Path("teamId") teamId: Int,
         @Query("status") status: String = "",
         @Query("date") date: String = "",
         @Query("dateFrom") dateFrom: String = "",
         @Query("dateTo") dateTo: String = "",
-        @Query("season") season: Int = 2023
+        @Query("season") season: String = "2023"
     ): Response<MatchesJson>
 
     //获取某个特定person的数据

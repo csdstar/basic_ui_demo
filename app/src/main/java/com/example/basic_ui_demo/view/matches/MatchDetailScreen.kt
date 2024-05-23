@@ -40,15 +40,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.basic_ui_demo.DetailScreenColor
 import com.example.basic_ui_demo.companion.ApiViewModel
-import com.example.basic_ui_demo.companion.RetrofitInstance
-import com.example.basic_ui_demo.companion.convertUtcToChinaDate
+import com.example.basic_ui_demo.companion.data.RetrofitInstance
+import com.example.basic_ui_demo.companion.convertUtcToChinaCertainDate
 import com.example.basic_ui_demo.companion.convertUtcToChinaTime
 import com.example.basic_ui_demo.data_class.data.Aggregates
 import com.example.basic_ui_demo.data_class.data.Status
-import com.example.basic_ui_demo.screen.TAG
+import com.example.basic_ui_demo.view.screen.TAG
+import com.example.basic_ui_demo.view.CrestImage
 import com.example.footballapidemo.data_class.data.Match
 import com.example.footballapidemo.data_class.data.Team
-import com.example.footballapidemo.view_model.MatchesViewModel
+import com.example.basic_ui_demo.view_model.MatchesViewModel
 import java.text.DecimalFormat
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -210,7 +211,7 @@ fun CenterDetailBox(modifier: Modifier, match: Match) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = convertUtcToChinaDate(match.utcDate),
+                text = convertUtcToChinaCertainDate(match.utcDate),
                 fontSize = 15.sp,
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,

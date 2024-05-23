@@ -9,5 +9,6 @@
     <string name="match">Matches</string>
     <string name="team">Team</string>
     <string name="data">Data</string>
+    <string name="title_activity_news">NewsActivity</string>
 
 </resources>

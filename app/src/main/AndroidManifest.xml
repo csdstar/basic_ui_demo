@@ -13,6 +13,11 @@
         android:theme="@style/Theme.Basic_ui_demo"
         tools:targetApi="31">
         <activity
+            android:name=".NewsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_news"
+            android:theme="@style/Theme.Basic_ui_demo" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

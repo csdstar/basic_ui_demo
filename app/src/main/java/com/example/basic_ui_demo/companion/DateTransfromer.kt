@@ -34,12 +34,23 @@ fun convertUtcToChinaTime(utcTimeString: String?): String {
 }
 
 //将字符串格式的UTC时间转换为字符串格式中国日期
-fun convertUtcToChinaDate(utcTimeString: String?): String{
+fun convertUtcToChinaCertainDate(utcTimeString: String?): String {
     val chinaLocalDate = convertUtcToChinaLocalDate(utcTimeString)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     return chinaLocalDate.format(formatter)
 }
 
+fun convertUtcToChinaDate(utcTimeString: String?):String{
+    val chinaLocalDate = convertUtcToChinaLocalDate(utcTimeString)
+    val formatter = DateTimeFormatter.ofPattern("MM-dd")
+    return chinaLocalDate.format(formatter)
+}
+
+fun convertDateStringToYearAndMonth(date: String): String {
+    //提取"YYYY-MM-DD"格式的日期中的年份和月份，方便排序(无错误检查)
+    val parts = date.split("-")
+    return parts[0] + "-" + parts[1]
+}
 
 //获取字符串格式的当前日期
 fun getCurrentDateString(): String {
@@ -86,8 +97,6 @@ fun isDateValid(dateFrom: String, dateTo: String): Boolean {
 }
 
 fun isDateInvalid(dateFrom: String, dateTo: String): Boolean {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val fromDate = LocalDate.parse(dateFrom, formatter)
-    val toDate = LocalDate.parse(dateTo, formatter)
-    return fromDate.isAfter(toDate)
+    return !isDateValid(dateFrom,dateTo)
 }
+

@@ -1,4 +1,4 @@
-package com.example.footballapidemo.data_class.news
+package com.example.basic_ui_demo.data_class.news
 
 data class Result(
     val allnum: Int,  //返回的news总数

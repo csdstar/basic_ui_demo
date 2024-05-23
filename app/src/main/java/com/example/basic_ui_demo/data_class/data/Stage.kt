@@ -1,4 +1,4 @@
-package com.example.footballapidemo.data_class.data
+package com.example.basic_ui_demo.data_class.data
 
 enum class Stage(val value: String = "") {
     FINAL("FINAL"),

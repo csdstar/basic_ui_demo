@@ -1,4 +1,4 @@
-package com.example.basic_ui_demo.companion
+package com.example.basic_ui_demo.companion.data
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

@@ -2,6 +2,10 @@ package com.example.footballapidemo.data_class.data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.basic_ui_demo.companion.convertUtcToChinaDate
+import com.example.basic_ui_demo.companion.convertUtcToChinaTime
+import com.example.basic_ui_demo.data_class.data.Score
+import com.example.basic_ui_demo.data_class.data.Stage
 import com.example.basic_ui_demo.data_class.data.Status
 import java.time.Instant
 import java.time.LocalDate
@@ -68,5 +72,27 @@ data class Match(
 
     fun getCurrentSeasonYear(): Int {
         return this.season.startDate.split("-")[0].toInt()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getMatchTime(): String {
+        val date = convertUtcToChinaDate(this.utcDate)
+        val time = convertUtcToChinaTime(this.utcDate)
+        return "$date   $time"
+    }
+
+    fun isLeague(): Boolean {
+        return this.status == Status.FINISHED
+    }
+
+    fun getMatchTitle(
+        competitions: List<String>,
+        competitionsCode: List<String>
+    ): String {
+        val index = competitionsCode.indexOf(this.competition.code)
+        return if (index in competitions.indices)
+            "${competitions[index]} ${this.stage.getChineseDescription()}"
+        else
+            "${this.competition.code} ${this.stage.getChineseDescription()}"
     }
 }

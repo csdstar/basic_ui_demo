@@ -1,10 +1,9 @@
-package com.example.footballapidemo.view_model
+package com.example.basic_ui_demo.view_model
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -12,11 +11,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
+import com.example.basic_ui_demo.companion.convertUtcToChinaDate
 import com.example.basic_ui_demo.companion.convertUtcToChinaLocalDate
-import com.example.footballapidemo.data_class.data.Match
+import com.example.basic_ui_demo.companion.convertUtcToChinaTime
 import com.example.basic_ui_demo.companion.getCurrentDateString
 import com.example.basic_ui_demo.companion.getDateStringWithOffset
 import com.example.footballapidemo.data_class.data.Competition
+import com.example.footballapidemo.data_class.data.Match
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -31,29 +33,30 @@ class MatchesViewModel : ViewModel() {
         lateinit var match: Match
         //存储被点击的MatchRow对应的match
 
-        fun getCompetitionNameByMatch(match: Match): String?{
+        private fun getCompetitionNameByMatch(match: Match): String? {
             return if (match.matchday == null)
                 null
-            else{
+            else {
                 val index = competitionsCode.indexOf(match.competition.code)
-                if(index == -1)
+                if (index == -1)
+                    match.competition.code
+                else
+                    competitions[index]
+            }
+        }
+
+        fun getCompetitionNameByMatch(): String? {
+            return if (match.matchday == null)
+                null
+            else {
+                val index = competitionsCode.indexOf(match.competition.code)
+                if (index == -1)
                     match.competition.code
                 else competitions[index]
             }
         }
 
-        fun getCompetitionNameByMatch(): String?{
-            return if (match.matchday == null)
-                null
-            else{
-                val index = competitionsCode.indexOf(match.competition.code)
-                if(index == -1)
-                    match.competition.code
-                else competitions[index]
-            }
-        }
-
-        fun isLeague(match: Match):Boolean{
+        fun isLeague(match: Match): Boolean {
             return match.competition.type == "LEAGUE"
         }
 
@@ -61,17 +64,17 @@ class MatchesViewModel : ViewModel() {
             return match.stage.getChineseDescription()
         }
 
-        fun getMatchTitle(match: Match) :String{
+        fun getMatchTitle(match: Match): String {
             val competitionName = getCompetitionNameByMatch(match)
-            return if(isLeague(match)){
+            return if (isLeague(match)) {
                 "$competitionName 第${match.matchday}轮"
-            } else{
+            } else {
                 val stage = getStageNameByMatch(match)
                 "$competitionName $stage"
             }
         }
 
-        fun getCurrentCompetitionByMatch(): Competition{
+        fun getCurrentCompetitionByMatch(): Competition {
             return match.competition
         }
     }
@@ -79,7 +82,8 @@ class MatchesViewModel : ViewModel() {
     data class PageData(
         val matchGroups: SnapshotStateMap<LocalDate, SnapshotStateList<Match>>,
         //该页面的赛程分组（按日期）
-        var listState: LazyListState?,
+        val initLoading: MutableStateFlow<Boolean>,
+        //该页面是否已经初始化加载完毕
         val dateFrom: MutableState<String>,
         //该页面显示的最早赛程时间
         val dateTo: MutableState<String>
@@ -92,6 +96,14 @@ class MatchesViewModel : ViewModel() {
     private val _index = mutableIntStateOf(0)
     //当前页面索引
 
+    val index by _index
+
+    //暴露的状态
+    fun setIndex(index: Int) {
+        _index.intValue = index
+    }
+    //只允许通过该函数修改viewModel中的索引
+
     private val _isLoading = mutableStateOf(true)
     //页面加载状态
 
@@ -100,8 +112,6 @@ class MatchesViewModel : ViewModel() {
     val pagesData: List<PageData>
         get() = _pagesData
 
-    val index: MutableIntState
-        get() = _index
 
     val isLoading: MutableState<Boolean>
         get() = _isLoading
@@ -113,11 +123,11 @@ class MatchesViewModel : ViewModel() {
         val curDate = getCurrentDateString()
         repeat(competitions.size) { _ ->
             val matchGroups = mutableStateMapOf<LocalDate, SnapshotStateList<Match>>()
-            val lazyListState: LazyListState? = null
+            val initLoading = MutableStateFlow(false)
             val dateFrom = mutableStateOf(getDateStringWithOffset(curDate, 5, false))
             val dateTo = mutableStateOf(getDateStringWithOffset(curDate, 5, true))
             //创建若干次state对象，确保每个pageData的变量独立
-            _pagesData.add(PageData(matchGroups, lazyListState, dateFrom, dateTo))
+            _pagesData.add(PageData(matchGroups, initLoading, dateFrom, dateTo))
         }
         _pagesData[0].dateFrom.value = getDateStringWithOffset(curDate, 2, false)
         _pagesData[0].dateTo.value = getDateStringWithOffset(curDate, 2, true)
@@ -145,10 +155,6 @@ class MatchesViewModel : ViewModel() {
         setDate(index, dateFrom, dateTo)
     }
 
-    fun setListState(index: Int, state: LazyListState) {
-        _pagesData[index].listState = state
-    }
-
     fun clearMap(index: Int) {
         _pagesData[index].matchGroups.clear()
     }
@@ -161,5 +167,13 @@ class MatchesViewModel : ViewModel() {
         if (!matches.contains(match)) {
             matches.add(match)
         }
+    }
+
+    fun initDone(index: Int) {
+        _pagesData[index].initLoading.value = true
+    }
+
+    fun isInitDone(index: Int): Boolean {
+        return _pagesData[index].initLoading.value
     }
 }

@@ -47,10 +47,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.basic_ui_demo.screen.TAG
+import com.example.basic_ui_demo.view.screen.TAG
 import com.example.basic_ui_demo.view_model.DataViewModel
 import com.example.footballapidemo.data_class.data.Competition
-import com.example.footballapidemo.view_model.MatchesViewModel
+import com.example.basic_ui_demo.view_model.MatchesViewModel
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -75,7 +75,6 @@ fun StandingScreen(competition: Competition?) {
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun StandingScreen(viewModel: DataViewModel, index: Int) {
-    Log.d(TAG, "indexxxx: $index")
     var selectedTab by remember { mutableStateOf("球队榜") }
     var selectedSeason by remember { mutableStateOf("2023") }
 
@@ -102,9 +101,9 @@ fun DetailTabsBar(
     onTabSelected: (String) -> Unit,
     onSeasonSelect: (String) -> Unit
 ) {
-
+    /////////////////////////////////////////////////////////////////////////////////////
+    //选择赛季，下拉菜单//
     val tabs = listOf("球队榜", "球员榜")
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,9 +112,6 @@ fun DetailTabsBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
-
-        /////////////////////////////////////////////////////////////////////////////////////
-        //选择赛季，下拉菜单
         var expanded by remember { mutableStateOf(false) }
         val seasons = listOf("2020", "2021", "2022", "2023")
         var selectedSeasonIndex by remember { mutableIntStateOf(3) }
@@ -176,8 +172,8 @@ fun DetailTabsBar(
             }
         }
 
-        ////////////////////////////////////////////////////////////////////////
-        //选择榜单(球队榜、球员榜)
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        //选择榜单按钮Tab(球队榜、球员榜)
         var selectedTabIndex by remember { mutableIntStateOf(0) }
         Row(
             modifier = Modifier.weight(1f),
